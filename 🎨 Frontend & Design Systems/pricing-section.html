@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing — SaaS Pricing Section</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            surface: '#111118',
+            border: '#1E1E2E',
+          },
+          keyframes: {
+            'spin-slow': {
+              from: { transform: 'rotate(0deg)' },
+              to:   { transform: 'rotate(360deg)' },
+            },
+            'fade-up': {
+              '0%':   { opacity: '0', transform: 'translateY(24px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            'badge-pop': {
+              '0%':   { transform: 'scale(0.8)', opacity: '0' },
+              '100%': { transform: 'scale(1)',   opacity: '1' },
+            },
+          },
+          animation: {
+            'spin-slow':  'spin-slow 4s linear infinite',
+            'fade-up':    'fade-up 0.6s ease both',
+            'badge-pop':  'badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* ── Animated conic-gradient border on Pro card ── */
+    .pro-border-wrap {
+      position: relative;
+      border-radius: 1.25rem; /* rounded-2xl equivalent */
+      padding: 1.5px;         /* border thickness */
+      background: transparent;
+    }
+    .pro-border-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: conic-gradient(
+        from var(--angle, 0deg),
+        #6366F1 0%,
+        #818CF8 20%,
+        #C7D2FE 40%,
+        #6366F1 60%,
+        #4338CA 80%,
+        #6366F1 100%
+      );
+      animation: spin-slow 4s linear infinite;
+      z-index: 0;
+    }
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    .pro-border-wrap::before {
+      animation: border-spin 4s linear infinite;
+    }
+    @keyframes border-spin {
+      to { --angle: 360deg; }
+    }
+    .pro-card-inner {
+      position: relative;
+      z-index: 1;
+      border-radius: calc(1.25rem - 1.5px);
+      overflow: hidden;
+    }
+
+    /* ── Glow beneath Pro card ── */
+    .pro-glow {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      height: 80px;
+      background: radial-gradient(ellipse, rgba(99,102,241,0.55) 0%, transparent 70%);
+      filter: blur(24px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ── Reduced motion: kill the spinning border, keep glow static ── */
+    @media (prefers-reduced-motion: reduce) {
+      .pro-border-wrap::before { animation: none; }
+      * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+    }
+
+    /* ── Toggle pill ── */
+    .toggle-track {
+      position: relative;
+      display: inline-flex;
+      background: #1E1E2E;
+      border-radius: 9999px;
+      padding: 3px;
+    }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      height: calc(100% - 6px);
+      width: calc(50% - 3px);
+      background: #6366F1;
+      border-radius: 9999px;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .toggle-thumb.annual { transform: translateX(100%); }
+    .toggle-label {
+      position: relative;
+      z-index: 1;
+      padding: 6px 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: color 0.2s;
+      user-select: none;
+    }
+
+    /* ── Staggered fade-up on cards ── */
+    .card-1 { animation: fade-up 0.5s 0.1s ease both; }
+    .card-2 { animation: fade-up 0.5s 0.22s ease both; }
+    .card-3 { animation: fade-up 0.5s 0.34s ease both; }
+
+    /* ── Keyboard focus ── */
+    button:focus-visible, a:focus-visible {
+      outline: 2px solid #818CF8;
+      outline-offset: 3px;
+    }
+  </style>
+</head>
+<body class="bg-[#0A0A0F] text-[#F9FAFB] font-sans antialiased">
+
+<!-- ═══════════════════════════════════════════════════════ PRICING SECTION -->
+<section class="relative isolate overflow-hidden px-6 py-28 sm:py-36">
+
+  <!-- Background ambient blobs -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 h-[600px] w-[900px] rounded-full bg-indigo-950/40 blur-[120px]"></div>
+    <div class="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-violet-950/30 blur-[100px]"></div>
+  </div>
+
+  <div class="mx-auto max-w-6xl">
+
+    <!-- ── Section header ── -->
+    <div class="text-center animate-fade-up">
+      <p class="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-6">
+        <svg class="h-3 w-3 fill-indigo-400" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4"/></svg>
+        Simple pricing
+      </p>
+      <h2 class="text-4xl font-black tracking-tight sm:text-6xl text-white">
+        One plan for every<br class="hidden sm:block" />
+        <span class="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">stage of growth.</span>
+      </h2>
+      <p class="mt-5 text-lg text-[#9CA3AF] max-w-xl mx-auto leading-relaxed">
+        Start free, upgrade when you're ready. No hidden fees, no per-seat gotchas.
+      </p>
+    </div>
+
+    <!-- ── Billing toggle ── -->
+    <div class="mt-10 flex items-center justify-center gap-4">
+      <div class="toggle-track" role="group" aria-label="Billing period">
+        <div class="toggle-thumb" id="toggle-thumb"></div>
+        <button
+          class="toggle-label text-white"
+          id="btn-monthly"
+          aria-pressed="true"
+          onclick="setBilling('monthly')"
+        >Monthly</button>
+        <button
+          class="toggle-label text-[#9CA3AF]"
+          id="btn-annual"
+          aria-pressed="false"
+          onclick="setBilling('annual')"
+        >Annual</button>
+      </div>
+      <span
+        id="save-badge"
+        class="hidden animate-badge-pop rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-semibold text-emerald-400"
+      >Save 20%</span>
+    </div>
+
+    <!-- ── Pricing cards ── -->
+    <div class="mt-16 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8 items-end">
+
+      <!-- FREE -->
+      <div class="card-1 rounded-2xl border border-[#1E1E2E] bg-[#111118] p-8 flex flex-col">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-[#9CA3AF]">Free</p>
+          <div class="mt-4 flex items-end gap-1">
+            <span class="text-5xl font-black text-white tabular-nums">$0</span>
+            <span class="mb-1.5 text-sm text-[#4B5563]">/ mo</span>
+          </div>
+          <p class="mt-3 text-sm text-[#9CA3AF] leading-relaxed">
+            Everything you need to explore the platform and ship your first project.
+          </p>
+        </div>
+
+        <div class="mt-8 border-t border-[#1E1E2E] pt-8 flex-1">
+          <ul class="space-y-3.5">
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              3 projects
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              1 team member
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              5 GB storage
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              Community support
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#4B5563]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#1E1E2E]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              Analytics dashboard
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#4B5563]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#1E1E2E]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              Custom domains
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#4B5563]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#1E1E2E]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              API access
+            </li>
+          </ul>
+        </div>
+
+        <a
+          href="#"
+          class="mt-8 block w-full rounded-xl border border-[#1E1E2E] bg-transparent py-3 text-center text-sm font-semibold text-[#F9FAFB] transition hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-white focus-visible:outline-indigo-500"
+        >
+          Get started free
+        </a>
+      </div>
+
+      <!-- PRO (elevated, animated border) -->
+      <div class="card-2 relative lg:-mt-6">
+        <!-- Glow effect beneath card -->
+        <div class="pro-glow"></div>
+
+        <div class="pro-border-wrap">
+          <div class="pro-card-inner bg-[#111118] p-8 flex flex-col">
+
+            <!-- Pro badge -->
+            <div class="flex items-center justify-between">
+              <p class="text-xs font-semibold uppercase tracking-widest text-indigo-400">Pro</p>
+              <span class="rounded-full bg-indigo-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white shadow-lg shadow-indigo-500/30">
+                Most popular
+              </span>
+            </div>
+
+            <div class="mt-4 flex items-end gap-1">
+              <span class="text-5xl font-black text-white tabular-nums" id="pro-price">$49</span>
+              <span class="mb-1.5 text-sm text-[#9CA3AF]" id="pro-period">/ mo</span>
+            </div>
+            <p id="pro-billed-note" class="mt-1 text-xs text-[#4B5563] hidden">Billed annually as $470/yr</p>
+            <p class="mt-3 text-sm text-[#9CA3AF] leading-relaxed">
+              For teams that ship fast. Everything Free includes, plus the tools to scale it.
+            </p>
+
+            <div class="mt-8 border-t border-[#1E1E2E] pt-8 flex-1">
+              <p class="text-[11px] font-semibold uppercase tracking-widest text-[#4B5563] mb-4">Everything in Free, plus</p>
+              <ul class="space-y-3.5">
+                <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                  Unlimited projects
+                </li>
+                <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                  Up to 10 team members
+                </li>
+                <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                  100 GB storage
+                </li>
+                <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                  Analytics dashboard
+                </li>
+                <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                  Custom domains
+                </li>
+                <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                  Full REST &amp; GraphQL API
+                </li>
+                <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                  Priority email support
+                </li>
+              </ul>
+            </div>
+
+            <a
+              href="#"
+              class="mt-8 block w-full rounded-xl bg-indigo-600 py-3 text-center text-sm font-bold text-white transition hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/40 focus-visible:outline-indigo-400"
+            >
+              Start 14-day free trial
+            </a>
+            <p class="mt-3 text-center text-xs text-[#4B5563]">No credit card required</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENTERPRISE -->
+      <div class="card-3 rounded-2xl border border-[#1E1E2E] bg-[#111118] p-8 flex flex-col">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-[#9CA3AF]">Enterprise</p>
+          <div class="mt-4">
+            <span class="text-4xl font-black text-white">Custom</span>
+          </div>
+          <p class="mt-3 text-sm text-[#9CA3AF] leading-relaxed">
+            Dedicated infrastructure, compliance controls, and an SLA your team can rely on.
+          </p>
+        </div>
+
+        <div class="mt-8 border-t border-[#1E1E2E] pt-8 flex-1">
+          <p class="text-[11px] font-semibold uppercase tracking-widest text-[#4B5563] mb-4">Everything in Pro, plus</p>
+          <ul class="space-y-3.5">
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              Unlimited team members
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              Unlimited storage
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              SSO / SAML 2.0
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              SOC 2 Type II &amp; HIPAA ready
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              Dedicated infrastructure
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              99.99% uptime SLA
+            </li>
+            <li class="flex items-start gap-3 text-sm text-[#D1D5DB]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#6366F1]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              Dedicated success manager
+            </li>
+          </ul>
+        </div>
+
+        <a
+          href="#"
+          class="mt-8 block w-full rounded-xl border border-[#1E1E2E] bg-transparent py-3 text-center text-sm font-semibold text-[#F9FAFB] transition hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-white focus-visible:outline-indigo-500"
+        >
+          Talk to sales
+        </a>
+      </div>
+
+    </div>
+
+    <!-- ── Bottom trust bar ── -->
+    <div class="mt-20 border-t border-[#1E1E2E] pt-12">
+      <p class="text-center text-xs font-semibold uppercase tracking-widest text-[#4B5563] mb-8">Trusted by teams at</p>
+      <div class="flex flex-wrap items-center justify-center gap-8 sm:gap-14 opacity-40 grayscale">
+        <!-- Wordmark logos rendered as SVG text for portability -->
+        <svg viewBox="0 0 80 20" class="h-5 fill-white" aria-label="Acme Corp"><text y="16" font-family="Inter,sans-serif" font-weight="700" font-size="14" letter-spacing="-0.5">Acme</text></svg>
+        <svg viewBox="0 0 80 20" class="h-5 fill-white" aria-label="Orbit"><text y="16" font-family="Inter,sans-serif" font-weight="700" font-size="14" letter-spacing="-0.5">Orbit</text></svg>
+        <svg viewBox="0 0 80 20" class="h-5 fill-white" aria-label="Stratos"><text y="16" font-family="Inter,sans-serif" font-weight="700" font-size="14" letter-spacing="-0.5">Stratos</text></svg>
+        <svg viewBox="0 0 80 20" class="h-5 fill-white" aria-label="Velo"><text y="16" font-family="Inter,sans-serif" font-weight="700" font-size="14" letter-spacing="-0.5">Velo</text></svg>
+        <svg viewBox="0 0 80 20" class="h-5 fill-white" aria-label="Forma"><text y="16" font-family="Inter,sans-serif" font-weight="700" font-size="14" letter-spacing="-0.5">Forma</text></svg>
+      </div>
+    </div>
+
+    <!-- ── FAQ micro-section ── -->
+    <div class="mt-20 max-w-2xl mx-auto">
+      <h3 class="text-center text-lg font-bold text-white mb-8">Common questions</h3>
+      <div class="space-y-1" id="faq">
+
+        <details class="group rounded-xl border border-[#1E1E2E] bg-[#111118] transition hover:border-indigo-500/30">
+          <summary class="flex cursor-pointer items-center justify-between px-6 py-4 text-sm font-medium text-[#D1D5DB] list-none select-none">
+            Can I switch plans at any time?
+            <svg class="h-4 w-4 text-[#4B5563] transition-transform group-open:rotate-45" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <p class="px-6 pb-5 text-sm text-[#9CA3AF] leading-relaxed">
+            Yes. Upgrades take effect immediately, and you'll only be charged the prorated difference. Downgrades take effect at the next billing cycle.
+          </p>
+        </details>
+
+        <details class="group rounded-xl border border-[#1E1E2E] bg-[#111118] transition hover:border-indigo-500/30">
+          <summary class="flex cursor-pointer items-center justify-between px-6 py-4 text-sm font-medium text-[#D1D5DB] list-none select-none">
+            What happens when my free trial ends?
+            <svg class="h-4 w-4 text-[#4B5563] transition-transform group-open:rotate-45" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <p class="px-6 pb-5 text-sm text-[#9CA3AF] leading-relaxed">
+            We'll send a reminder 3 days before your trial ends. If you don't add a payment method, your workspace automatically moves to the Free plan — no data is lost.
+          </p>
+        </details>
+
+        <details class="group rounded-xl border border-[#1E1E2E] bg-[#111118] transition hover:border-indigo-500/30">
+          <summary class="flex cursor-pointer items-center justify-between px-6 py-4 text-sm font-medium text-[#D1D5DB] list-none select-none">
+            Do you offer discounts for startups or non-profits?
+            <svg class="h-4 w-4 text-[#4B5563] transition-transform group-open:rotate-45" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </summary>
+          <p class="px-6 pb-5 text-sm text-[#9CA3AF] leading-relaxed">
+            We do. Eligible early-stage startups and registered non-profits can apply for 50% off any paid plan — reach out to our team with proof of eligibility.
+          </p>
+        </details>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ BILLING TOGGLE JS -->
+<script>
+  const MONTHLY_PRICE = 49;
+  const ANNUAL_PRICE  = Math.round(MONTHLY_PRICE * 0.8); // 20% off
+
+  let billing = 'monthly';
+
+  function setBilling(mode) {
+    billing = mode;
+    const thumb     = document.getElementById('toggle-thumb');
+    const btnMo     = document.getElementById('btn-monthly');
+    const btnAn     = document.getElementById('btn-annual');
+    const badge     = document.getElementById('save-badge');
+    const price     = document.getElementById('pro-price');
+    const period    = document.getElementById('pro-period');
+    const billedNote = document.getElementById('pro-billed-note');
+
+    if (mode === 'annual') {
+      thumb.classList.add('annual');
+      btnMo.classList.replace('text-white', 'text-[#9CA3AF]');
+      btnAn.classList.replace('text-[#9CA3AF]', 'text-white');
+      btnMo.setAttribute('aria-pressed', 'false');
+      btnAn.setAttribute('aria-pressed', 'true');
+      badge.classList.remove('hidden');
+      price.textContent = '$' + ANNUAL_PRICE;
+      period.textContent = '/ mo';
+      billedNote.classList.remove('hidden');
+    } else {
+      thumb.classList.remove('annual');
+      btnAn.classList.replace('text-white', 'text-[#9CA3AF]');
+      btnMo.classList.replace('text-[#9CA3AF]', 'text-white');
+      btnMo.setAttribute('aria-pressed', 'true');
+      btnAn.setAttribute('aria-pressed', 'false');
+      badge.classList.add('hidden');
+      price.textContent = '$' + MONTHLY_PRICE;
+      period.textContent = '/ mo';
+      billedNote.classList.add('hidden');
+    }
+  }
+</script>
+
+</body>
+</html>

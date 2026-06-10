@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Nexus — AI-powered productivity that connects your work, thought, and execution in one intelligent workspace." />
+  <title>Nexus — AI Productivity, Connected</title>
+
+  <!-- Plus Jakarta Sans (design system: SaaS Mobile / High-Tech Boutique) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            // Design system: SaaS Mobile (High-Tech Boutique)
+            // Primary: Navy professional | CTA: Emerald green
+            primary:    '#1E3A5F',
+            secondary:  '#2563EB',
+            accent:     '#059669',
+            background: '#F8FAFC',
+            foreground: '#0F172A',
+            muted:      '#F1F3F5',
+            border:     '#E4E7EB',
+            card:       '#FFFFFF',
+          },
+          keyframes: {
+            'fade-up': {
+              '0%':   { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            'pulse-dot': {
+              '0%, 100%': { opacity: '1' },
+              '50%':      { opacity: '0.4' },
+            },
+            'float': {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%':      { transform: 'translateY(-8px)' },
+            },
+          },
+          animation: {
+            'fade-up':   'fade-up 0.5s ease-out both',
+            'pulse-dot': 'pulse-dot 2s ease-in-out infinite',
+            'float':     'float 4s ease-in-out infinite',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Respect prefers-reduced-motion — rule: reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Staggered entrance delays for feature cards */
+    .stagger-1 { animation-delay: 0.05s; }
+    .stagger-2 { animation-delay: 0.12s; }
+    .stagger-3 { animation-delay: 0.19s; }
+    .stagger-4 { animation-delay: 0.26s; }
+    .stagger-5 { animation-delay: 0.33s; }
+    .stagger-6 { animation-delay: 0.40s; }
+
+    /* Glassmorphism nav — rule: blur-purpose (indicates background dismissal) */
+    .nav-glass {
+      background: rgba(248, 250, 252, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* Gradient CTA button */
+    .btn-primary {
+      background: linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%);
+      transition: transform 150ms ease-out, box-shadow 150ms ease-out, opacity 150ms ease-out;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+      opacity: 0.95;
+    }
+    .btn-primary:active {
+      transform: scale(0.97);
+      box-shadow: none;
+    }
+
+    /* Accent (green) CTA */
+    .btn-accent {
+      background: #059669;
+      transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+    }
+    .btn-accent:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(5, 150, 105, 0.30);
+    }
+    .btn-accent:active {
+      transform: scale(0.97);
+    }
+
+    /* Card hover lift */
+    .card-lift {
+      transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+    }
+    .card-lift:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(30, 58, 95, 0.10);
+    }
+
+    /* Focus ring for keyboard nav — rule: focus-states */
+    :focus-visible {
+      outline: 2px solid #2563EB;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* Subtle grid background for hero */
+    .hero-grid {
+      background-image:
+        linear-gradient(rgba(37, 99, 235, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 99, 235, 0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #1E3A5F 0%, #2563EB 60%, #059669 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Inline SVG icon sizing system (icon-md = 20px standard) */
+    .icon-sm { width: 16px; height: 16px; }
+    .icon-md { width: 20px; height: 20px; }
+    .icon-lg { width: 24px; height: 24px; }
+  </style>
+</head>
+
+<body class="bg-background text-foreground font-sans antialiased">
+
+  <!-- ─────────────────────────────────────────────────────────
+       NAV — glassmorphism, sticky, keyboard-navigable
+       rule: navigation-consistency, skip-links, keyboard-nav
+  ──────────────────────────────────────────────────────────── -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-secondary focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-medium">
+    Skip to main content
+  </a>
+
+  <header role="banner">
+    <nav
+      aria-label="Primary navigation"
+      class="nav-glass fixed top-0 left-0 right-0 z-40 border-b border-border"
+    >
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+
+          <!-- Logo -->
+          <a href="/" aria-label="Nexus home" class="flex items-center gap-2.5 group">
+            <!-- Logomark: simple SVG hexagon — no emoji -->
+            <svg
+              viewBox="0 0 32 32"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon-lg flex-shrink-0"
+              aria-hidden="true"
+            >
+              <path
+                d="M16 2L28 9V23L16 30L4 23V9L16 2Z"
+                fill="#1E3A5F"
+              />
+              <path
+                d="M16 8L22 11.5V18.5L16 22L10 18.5V11.5L16 8Z"
+                fill="#2563EB"
+              />
+              <circle cx="16" cy="15" r="2.5" fill="white" />
+            </svg>
+            <span class="text-[17px] font-700 tracking-tight text-primary" style="font-weight:700">Nexus</span>
+          </a>
+
+          <!-- Desktop nav links -->
+          <ul class="hidden md:flex items-center gap-8 list-none" role="list">
+            <li><a href="#features" class="text-sm font-medium text-slate-500 hover:text-foreground transition-colors duration-150">Features</a></li>
+            <li><a href="#how-it-works" class="text-sm font-medium text-slate-500 hover:text-foreground transition-colors duration-150">How it Works</a></li>
+            <li><a href="#social-proof" class="text-sm font-medium text-slate-500 hover:text-foreground transition-colors duration-150">Testimonials</a></li>
+            <li><a href="#pricing" class="text-sm font-medium text-slate-500 hover:text-foreground transition-colors duration-150">Pricing</a></li>
+          </ul>
+
+          <!-- CTA -->
+          <div class="flex items-center gap-3">
+            <a href="#" class="hidden md:inline-block text-sm font-medium text-slate-600 hover:text-foreground transition-colors cursor-pointer">Sign in</a>
+            <a
+              href="#get-started"
+              class="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white cursor-pointer"
+            >
+              Get started free
+              <svg viewBox="0 0 16 16" fill="none" class="icon-sm" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────────
+       MAIN CONTENT
+  ──────────────────────────────────────────────────────────── -->
+  <main id="main-content" tabindex="-1">
+
+    <!-- ──────────────────────────────────────────────────────
+         SECTION 1 — HERO
+         Pattern: "Prompt/Input Hero" + "AI Personalization"
+         Above-fold CTA; show don't tell
+    ─────────────────────────────────────────────────────────── -->
+    <section
+      aria-labelledby="hero-heading"
+      class="relative hero-grid pt-32 pb-24 px-6 overflow-hidden"
+    >
+      <!-- Radial gradient bleed (decorative, not content) -->
+      <div
+        aria-hidden="true"
+        class="absolute inset-0 flex items-center justify-center pointer-events-none"
+      >
+        <div class="w-[800px] h-[600px] rounded-full bg-blue-100 opacity-30 blur-3xl"></div>
+      </div>
+
+      <div class="relative max-w-4xl mx-auto text-center">
+
+        <!-- Status badge — pulsing dot rule: pulsing status dot on section badges -->
+        <div class="inline-flex items-center gap-2 bg-white border border-border rounded-full px-4 py-1.5 text-sm font-medium text-slate-600 mb-8 shadow-sm animate-fade-up">
+          <span class="w-2 h-2 rounded-full bg-accent animate-pulse-dot flex-shrink-0" aria-hidden="true"></span>
+          Now in public beta — free for teams up to 5
+        </div>
+
+        <!-- Headline — rule: heading-hierarchy h1 first -->
+        <h1
+          id="hero-heading"
+          class="text-5xl md:text-6xl lg:text-7xl font-800 leading-[1.08] tracking-tight text-foreground mb-6 animate-fade-up stagger-1"
+          style="font-weight: 800;"
+        >
+          Think faster.<br />
+          <span class="gradient-text">Ship smarter.</span>
+        </h1>
+
+        <p class="text-lg md:text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto mb-10 animate-fade-up stagger-2">
+          Nexus is the AI productivity layer that connects your notes, tasks, and context — so you spend less time organizing and more time doing your best work.
+        </p>
+
+        <!-- Primary CTA group — rule: primary-action (one primary CTA) -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-up stagger-3">
+          <a
+            href="#get-started"
+            id="get-started"
+            class="btn-accent inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-base font-semibold text-white cursor-pointer min-h-[44px]"
+            aria-label="Start using Nexus for free"
+          >
+            Start for free
+            <svg viewBox="0 0 16 16" fill="none" class="icon-sm" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a
+            href="#how-it-works"
+            class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-base font-medium text-slate-600 bg-white border border-border hover:border-slate-300 transition-colors duration-150 cursor-pointer min-h-[44px]"
+          >
+            <svg viewBox="0 0 16 16" fill="none" class="icon-sm" aria-hidden="true">
+              <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6.5 6.5C6.5 5.67 7.17 5 8 5s1.5.67 1.5 1.5c0 .83-.67 1.5-1.5 1.5V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="8" cy="11" r=".75" fill="currentColor"/>
+            </svg>
+            See how it works
+          </a>
+        </div>
+
+        <!-- Social proof numbers — rule: social-proof, conversion-optimization -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-8 animate-fade-up stagger-4" aria-label="Usage statistics">
+          <div class="text-center">
+            <p class="text-2xl font-bold text-foreground tabular-nums">12,400+</p>
+            <p class="text-sm text-slate-500 mt-0.5">Teams onboarded</p>
+          </div>
+          <div class="hidden sm:block w-px h-8 bg-border" aria-hidden="true"></div>
+          <div class="text-center">
+            <p class="text-2xl font-bold text-foreground tabular-nums">4.8 / 5</p>
+            <p class="text-sm text-slate-500 mt-0.5">Average rating</p>
+          </div>
+          <div class="hidden sm:block w-px h-8 bg-border" aria-hidden="true"></div>
+          <div class="text-center">
+            <p class="text-2xl font-bold text-foreground tabular-nums">3.2×</p>
+            <p class="text-sm text-slate-500 mt-0.5">Faster delivery reported</p>
+          </div>
+        </div>
+
+        <!-- Product screenshot mockup -->
+        <div class="mt-16 animate-fade-up stagger-5 animate-float" aria-hidden="true">
+          <div class="relative mx-auto max-w-3xl">
+            <!-- Browser chrome mockup -->
+            <div class="bg-white rounded-2xl shadow-2xl border border-border overflow-hidden">
+              <!-- Browser bar -->
+              <div class="flex items-center gap-2 px-4 py-3 bg-muted border-b border-border">
+                <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                  <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                </div>
+                <div class="flex-1 bg-white rounded-md px-3 py-1 text-xs text-slate-400 border border-border max-w-xs mx-auto text-center">
+                  app.nexus.ai/workspace
+                </div>
+              </div>
+              <!-- Dashboard preview (SVG placeholder, production would be a real screenshot) -->
+              <div class="bg-gradient-to-br from-slate-50 to-blue-50 p-6" style="min-height: 280px;">
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                  <div class="col-span-2 bg-white rounded-xl border border-border p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-3">
+                      <div class="w-2 h-2 rounded-full bg-accent"></div>
+                      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">AI Summary</span>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="h-3 bg-slate-100 rounded-full w-full"></div>
+                      <div class="h-3 bg-slate-100 rounded-full w-4/5"></div>
+                      <div class="h-3 bg-blue-100 rounded-full w-3/5"></div>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                      <div class="h-7 w-20 bg-primary rounded-lg opacity-90"></div>
+                      <div class="h-7 w-16 bg-border rounded-lg"></div>
+                    </div>
+                  </div>
+                  <div class="bg-white rounded-xl border border-border p-4 shadow-sm">
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Focus Score</div>
+                    <div class="text-3xl font-800 text-primary" style="font-weight:800">94%</div>
+                    <div class="text-xs text-accent font-medium mt-1">+12% this week</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                  <div class="bg-white rounded-xl border border-border p-3 shadow-sm">
+                    <div class="h-2 bg-blue-200 rounded-full w-3/4 mb-2"></div>
+                    <div class="h-2 bg-slate-100 rounded-full w-1/2"></div>
+                  </div>
+                  <div class="bg-white rounded-xl border border-border p-3 shadow-sm">
+                    <div class="h-2 bg-emerald-200 rounded-full w-4/5 mb-2"></div>
+                    <div class="h-2 bg-slate-100 rounded-full w-2/3"></div>
+                  </div>
+                  <div class="bg-white rounded-xl border border-border p-3 shadow-sm">
+                    <div class="h-2 bg-blue-100 rounded-full w-2/3 mb-2"></div>
+                    <div class="h-2 bg-slate-100 rounded-full w-1/2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────────────
+         SECTION 2 — LOGOS / TRUST
+         rule: social-proof, visual-hierarchy
+    ─────────────────────────────────────────────────────────── -->
+    <section aria-label="Trusted by teams at" class="py-14 bg-white border-y border-border">
+      <div class="max-w-5xl mx-auto px-6">
+        <p class="text-center text-sm font-medium text-slate-400 uppercase tracking-widest mb-10">
+          Trusted by teams at
+        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 items-center justify-items-center opacity-40">
+          <!-- SVG wordmark placeholders (production: use real SVG logos) -->
+          <svg viewBox="0 0 80 24" fill="none" class="h-6 w-auto" aria-label="Acme Corp"><rect x="0" y="4" width="80" height="16" rx="3" fill="#0F172A"/></svg>
+          <svg viewBox="0 0 80 24" fill="none" class="h-6 w-auto" aria-label="Stripe"><rect x="0" y="4" width="80" height="16" rx="3" fill="#0F172A"/></svg>
+          <svg viewBox="0 0 80 24" fill="none" class="h-6 w-auto" aria-label="Linear"><rect x="0" y="4" width="80" height="16" rx="3" fill="#0F172A"/></svg>
+          <svg viewBox="0 0 80 24" fill="none" class="h-6 w-auto" aria-label="Vercel"><rect x="0" y="4" width="80" height="16" rx="3" fill="#0F172A"/></svg>
+          <svg viewBox="0 0 80 24" fill="none" class="h-6 w-auto" aria-label="Notion"><rect x="0" y="4" width="80" height="16" rx="3" fill="#0F172A"/></svg>
+          <svg viewBox="0 0 80 24" fill="none" class="h-6 w-auto" aria-label="Figma"><rect x="0" y="4" width="80" height="16" rx="3" fill="#0F172A"/></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────────────
+         SECTION 3 — HOW IT WORKS
+         rule: progressive-disclosure, visual-hierarchy
+    ─────────────────────────────────────────────────────────── -->
+    <section id="how-it-works" aria-labelledby="how-heading" class="py-24 px-6">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16">
+          <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-1.5 text-sm font-medium text-secondary mb-5">
+            How it works
+          </div>
+          <h2 id="how-heading" class="text-3xl md:text-4xl font-800 text-foreground leading-tight mb-4" style="font-weight:800">
+            Three steps to peak productivity
+          </h2>
+          <p class="text-lg text-slate-500 max-w-xl mx-auto leading-relaxed">
+            Nexus integrates with your existing tools and learns how you work, then surfaces the right context at the right moment.
+          </p>
+        </div>
+
+        <ol class="relative" aria-label="How Nexus works — three steps">
+          <!-- Step connector line (decorative) -->
+          <div class="absolute left-8 md:left-1/2 top-12 bottom-12 w-px bg-gradient-to-b from-secondary via-blue-200 to-transparent -translate-x-1/2 hidden md:block" aria-hidden="true"></div>
+
+          <!-- Step 1 -->
+          <li class="relative flex flex-col md:flex-row items-start md:items-center gap-8 mb-16">
+            <div class="flex-1 md:text-right md:pr-16">
+              <h3 class="text-xl font-700 text-foreground mb-2" style="font-weight:700">Connect your tools</h3>
+              <p class="text-slate-500 leading-relaxed max-w-sm md:ml-auto">
+                Link Slack, Notion, Linear, Gmail and 40+ integrations in one click. Nexus ingests context automatically — no manual imports.
+              </p>
+            </div>
+            <div class="flex-shrink-0 z-10 flex items-center justify-center w-16 h-16 rounded-2xl bg-primary text-white font-800 text-xl shadow-lg" style="font-weight:800" aria-hidden="true">
+              1
+            </div>
+            <div class="flex-1 md:pl-16">
+              <div class="bg-white rounded-2xl border border-border p-5 shadow-sm card-lift">
+                <div class="flex flex-wrap gap-2">
+                  <span class="inline-flex items-center gap-1.5 bg-muted rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600">
+                    <svg viewBox="0 0 16 16" fill="none" class="icon-sm" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="2" fill="#4A154B"/></svg>
+                    Slack
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 bg-muted rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600">
+                    <svg viewBox="0 0 16 16" fill="none" class="icon-sm" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="2" fill="#000"/></svg>
+                    Notion
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 bg-muted rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600">
+                    <svg viewBox="0 0 16 16" fill="none" class="icon-sm" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="2" fill="#5E6AD2"/></svg>
+                    Linear
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 bg-muted rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600">
+                    <svg viewBox="0 0 16 16" fill="none" class="icon-sm" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="2" fill="#EA4335"/></svg>
+                    Gmail
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 rounded-lg px-3 py-1.5 text-xs font-medium text-secondary">
+                    + 37 more
+                  </span>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Step 2 -->
+          <li class="relative flex flex-col md:flex-row-reverse items-start md:items-center gap-8 mb-16">
+            <div class="flex-1 md:text-left md:pl-16">
+              <h3 class="text-xl font-700 text-foreground mb-2" style="font-weight:700">AI surfaces what matters</h3>
+              <p class="text-slate-500 leading-relaxed max-w-sm">
+                Our LLM synthesizes threads, tasks, and docs to give you a daily briefing — filtered to your role and goals. No noise.
+              </p>
+            </div>
+            <div class="flex-shrink-0 z-10 flex items-center justify-center w-16 h-16 rounded-2xl bg-secondary text-white font-800 text-xl shadow-lg" style="font-weight:800" aria-hidden="true">
+              2
+            </div>
+            <div class="flex-1 md:pr-16 md:text-right">
+              <div class="bg-white rounded-2xl border border-border p-5 shadow-sm card-lift">
+                <div class="flex items-start gap-3 text-left">
+                  <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="none" class="icon-sm" aria-hidden="true">
+                      <path d="M8 2C4.69 2 2 4.69 2 8s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" stroke="#2563EB" stroke-width="1.5"/>
+                      <path d="M8 5v4l2.5 1.5" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-xs font-semibold text-slate-400 mb-1">Today's briefing · 8:02 AM</p>
+                    <p class="text-sm text-foreground leading-snug">3 PRs need your review. Sprint retro in 2h. Sarah flagged a blocker on checkout flow — context attached.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Step 3 -->
+          <li class="relative flex flex-col md:flex-row items-start md:items-center gap-8">
+            <div class="flex-1 md:text-right md:pr-16">
+              <h3 class="text-xl font-700 text-foreground mb-2" style="font-weight:700">Execute with full context</h3>
+              <p class="text-slate-500 leading-relaxed max-w-sm md:ml-auto">
+                Draft replies, write specs, and close tasks — all within Nexus, with your full context pre-loaded. One workspace, zero tab-switching.
+              </p>
+            </div>
+            <div class="flex-shrink-0 z-10 flex items-center justify-center w-16 h-16 rounded-2xl bg-accent text-white font-800 text-xl shadow-lg" style="font-weight:800" aria-hidden="true">
+              3
+            </div>
+            <div class="flex-1 md:pl-16">
+              <div class="bg-white rounded-2xl border border-border p-5 shadow-sm card-lift">
+                <div class="flex items-center gap-2 mb-3">
+                  <div class="w-2 h-2 rounded-full bg-accent animate-pulse-dot" aria-hidden="true"></div>
+                  <span class="text-xs font-semibold text-slate-400">Nexus is drafting…</span>
+                </div>
+                <div class="space-y-2">
+                  <div class="h-2.5 bg-emerald-50 border border-emerald-100 rounded-full w-full"></div>
+                  <div class="h-2.5 bg-slate-50 rounded-full w-4/5"></div>
+                  <div class="h-2.5 bg-slate-50 rounded-full w-3/5"></div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────────────
+         SECTION 4 — FEATURES (Bento-style grid)
+         rule: style bento, primary-action, no-emoji-icons
+         Staggered fade-up entrance (Y:20→0)
+    ─────────────────────────────────────────────────────────── -->
+    <section id="features" aria-labelledby="features-heading" class="py-24 px-6 bg-muted">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <div class="inline-flex items-center gap-2 bg-white border border-border rounded-full px-4 py-1.5 text-sm font-medium text-slate-600 mb-5">
+            Core features
+          </div>
+          <h2 id="features-heading" class="text-3xl md:text-4xl font-800 text-foreground leading-tight mb-4" style="font-weight:800">
+            Everything a high-output team needs
+          </h2>
+          <p class="text-lg text-slate-500 max-w-xl mx-auto">
+            Nexus replaces five tools with one — without sacrificing depth.
+          </p>
+        </div>
+
+        <!-- Bento grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+          <!-- Feature 1: Large card -->
+          <article class="lg:col-span-2 bg-white rounded-2xl border border-border p-8 shadow-sm card-lift animate-fade-up stagger-1">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center mb-5" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" class="icon-lg" aria-hidden="true">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-700 text-foreground mb-2" style="font-weight:700">Universal context layer</h3>
+            <p class="text-slate-500 leading-relaxed mb-6">
+              Every piece of information — email threads, Slack messages, PR comments, Jira tickets — unified into a single searchable context graph. Ask Nexus anything about your work.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-flex items-center bg-blue-50 text-secondary text-xs font-medium rounded-lg px-3 py-1.5">Semantic search</span>
+              <span class="inline-flex items-center bg-blue-50 text-secondary text-xs font-medium rounded-lg px-3 py-1.5">Auto-tagging</span>
+              <span class="inline-flex items-center bg-blue-50 text-secondary text-xs font-medium rounded-lg px-3 py-1.5">Knowledge graph</span>
+            </div>
+          </article>
+
+          <!-- Feature 2 -->
+          <article class="bg-white rounded-2xl border border-border p-8 shadow-sm card-lift animate-fade-up stagger-2">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-5" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" class="icon-lg" aria-hidden="true">
+                <path d="M9 11l3 3 8-8" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h7" stroke="#059669" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-700 text-foreground mb-2" style="font-weight:700">Smart task engine</h3>
+            <p class="text-slate-500 leading-relaxed">
+              Tasks auto-created from meetings, messages and emails. Priority scoring based on deadlines, stakeholder signals, and your focus patterns.
+            </p>
+          </article>
+
+          <!-- Feature 3 -->
+          <article class="bg-white rounded-2xl border border-border p-8 shadow-sm card-lift animate-fade-up stagger-3">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center mb-5" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" class="icon-lg" aria-hidden="true">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-700 text-foreground mb-2" style="font-weight:700">Context-aware AI drafts</h3>
+            <p class="text-slate-500 leading-relaxed">
+              Write replies, specs, and updates with full project context pre-loaded. Nexus knows the thread — you just confirm and send.
+            </p>
+          </article>
+
+          <!-- Feature 4 -->
+          <article class="bg-white rounded-2xl border border-border p-8 shadow-sm card-lift animate-fade-up stagger-4">
+            <div class="w-12 h-12 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center mb-5" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" class="icon-lg" aria-hidden="true">
+                <path d="M18 20V10M12 20V4M6 20v-6" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-700 text-foreground mb-2" style="font-weight:700">Focus analytics</h3>
+            <p class="text-slate-500 leading-relaxed">
+              Understand where your hours actually go. Weekly focus reports highlight deep work time, context switching cost, and team interruption patterns.
+            </p>
+          </article>
+
+          <!-- Feature 5: Highlight card -->
+          <article class="lg:col-span-2 bg-gradient-to-br from-primary to-secondary rounded-2xl p-8 shadow-lg card-lift animate-fade-up stagger-5">
+            <div class="w-12 h-12 rounded-xl bg-white bg-opacity-20 flex items-center justify-center mb-5" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" class="icon-lg" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-700 text-white mb-2" style="font-weight:700">Enterprise-grade security</h3>
+            <p class="text-blue-100 leading-relaxed mb-5">
+              SOC 2 Type II certified. End-to-end encrypted at rest and in transit. Your data never trains our models. GDPR and CCPA compliant out of the box.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-flex items-center bg-white bg-opacity-15 text-white text-xs font-medium rounded-lg px-3 py-1.5">SOC 2 Type II</span>
+              <span class="inline-flex items-center bg-white bg-opacity-15 text-white text-xs font-medium rounded-lg px-3 py-1.5">E2E Encryption</span>
+              <span class="inline-flex items-center bg-white bg-opacity-15 text-white text-xs font-medium rounded-lg px-3 py-1.5">GDPR</span>
+              <span class="inline-flex items-center bg-white bg-opacity-15 text-white text-xs font-medium rounded-lg px-3 py-1.5">CCPA</span>
+            </div>
+          </article>
+
+          <!-- Feature 6 -->
+          <article class="bg-white rounded-2xl border border-border p-8 shadow-sm card-lift animate-fade-up stagger-6">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center mb-5" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" class="icon-lg" aria-hidden="true">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="9" cy="7" r="4" stroke="#D97706" stroke-width="1.5"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-700 text-foreground mb-2" style="font-weight:700">Team intelligence</h3>
+            <p class="text-slate-500 leading-relaxed">
+              See what your team is working on, surface collaboration bottlenecks, and get handoff summaries without chasing updates in Slack.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────────────
+         SECTION 5 — TESTIMONIALS
+         rule: social-proof, visual-hierarchy, tabular figures
+    ─────────────────────────────────────────────────────────── -->
+    <section id="social-proof" aria-labelledby="testimonials-heading" class="py-24 px-6 bg-white">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 id="testimonials-heading" class="text-3xl md:text-4xl font-800 text-foreground mb-4" style="font-weight:800">
+            Loved by builders
+          </h2>
+          <p class="text-lg text-slate-500">Real feedback from teams shipping with Nexus.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <!-- Testimonial 1 -->
+          <blockquote class="bg-muted rounded-2xl p-7 card-lift">
+            <!-- Stars — using SVG not emoji -->
+            <div class="flex gap-1 mb-4" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+            </div>
+            <p class="text-slate-700 leading-relaxed mb-6">
+              "Nexus cut our sprint planning from 3 hours to 45 minutes. The AI briefings alone have saved our eng lead 2 hours a day. I can't imagine going back."
+            </p>
+            <footer class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-sm font-bold flex-shrink-0" aria-hidden="true">
+                JL
+              </div>
+              <div>
+                <cite class="not-italic text-sm font-semibold text-foreground">Jordan Lee</cite>
+                <p class="text-xs text-slate-400">CTO, Fieldwork</p>
+              </div>
+            </footer>
+          </blockquote>
+
+          <!-- Testimonial 2 -->
+          <blockquote class="bg-muted rounded-2xl p-7 card-lift">
+            <div class="flex gap-1 mb-4" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+            </div>
+            <p class="text-slate-700 leading-relaxed mb-6">
+              "We replaced our standup bot, project wiki, and weekly digest with Nexus. It handles all three better than each individual tool did. Absolutely wild."
+            </p>
+            <footer class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-emerald-400 flex items-center justify-center text-white text-sm font-bold flex-shrink-0" aria-hidden="true">
+                PR
+              </div>
+              <div>
+                <cite class="not-italic text-sm font-semibold text-foreground">Priya Rajan</cite>
+                <p class="text-xs text-slate-400">Head of Product, Dune Labs</p>
+              </div>
+            </footer>
+          </blockquote>
+
+          <!-- Testimonial 3 -->
+          <blockquote class="bg-muted rounded-2xl p-7 card-lift">
+            <div class="flex gap-1 mb-4" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+              <svg viewBox="0 0 16 16" fill="#F59E0B" class="icon-md" aria-hidden="true"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12 3.5 14.5l1-5L1 6l5-.5z"/></svg>
+            </div>
+            <p class="text-slate-700 leading-relaxed mb-6">
+              "The focus analytics were a revelation. I thought I was deep-working 5 hours a day. Nexus showed me it was 90 minutes. Changed how I structure my entire week."
+            </p>
+            <footer class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-secondary flex items-center justify-center text-white text-sm font-bold flex-shrink-0" aria-hidden="true">
+                MK
+              </div>
+              <div>
+                <cite class="not-italic text-sm font-semibold text-foreground">Marcus Kim</cite>
+                <p class="text-xs text-slate-400">Founder, Beacon</p>
+              </div>
+            </footer>
+          </blockquote>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────────────
+         SECTION 6 — PRICING
+         rule: pricing-focused, popular plan highlighted,
+               annual discount, primary-action per card
+    ─────────────────────────────────────────────────────────── -->
+    <section id="pricing" aria-labelledby="pricing-heading" class="py-24 px-6 bg-muted">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 id="pricing-heading" class="text-3xl md:text-4xl font-800 text-foreground mb-4" style="font-weight:800">
+            Simple, honest pricing
+          </h2>
+          <p class="text-lg text-slate-500">No per-seat surprises. Pick what fits your team.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+
+          <!-- Free -->
+          <div class="bg-white rounded-2xl border border-border p-8 flex flex-col card-lift">
+            <div>
+              <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">Starter</p>
+              <p class="text-4xl font-800 text-foreground mb-1 tabular-nums" style="font-weight:800">$0</p>
+              <p class="text-sm text-slate-400 mb-6">Free forever · up to 5 members</p>
+              <ul class="space-y-3 mb-8" aria-label="Starter plan features">
+                <li class="flex items-center gap-2.5 text-sm text-slate-600">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  5 integrations
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-slate-600">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  7-day context window
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-slate-600">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Daily AI briefing
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-slate-400">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M4 4l8 8M12 4L4 12" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Focus analytics
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-slate-400">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M4 4l8 8M12 4L4 12" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  SSO / SAML
+                </li>
+              </ul>
+            </div>
+            <a href="#get-started" class="mt-auto block w-full text-center py-3 rounded-xl border border-border text-sm font-semibold text-slate-700 hover:border-slate-300 hover:bg-muted transition-colors duration-150 cursor-pointer min-h-[44px] flex items-center justify-center">
+              Get started free
+            </a>
+          </div>
+
+          <!-- Pro — highlighted as most popular -->
+          <div class="bg-primary rounded-2xl p-8 flex flex-col relative shadow-2xl ring-2 ring-secondary ring-offset-2">
+            <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
+              <span class="bg-accent text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-sm whitespace-nowrap">
+                Most popular
+              </span>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-blue-300 uppercase tracking-wide mb-2">Pro</p>
+              <div class="flex items-baseline gap-1 mb-1">
+                <p class="text-4xl font-800 text-white tabular-nums" style="font-weight:800">$29</p>
+                <p class="text-blue-300 text-sm">/ mo per team</p>
+              </div>
+              <p class="text-sm text-blue-300 mb-6">Billed annually · saves 20%</p>
+              <ul class="space-y-3 mb-8" aria-label="Pro plan features">
+                <li class="flex items-center gap-2.5 text-sm text-blue-100">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  40+ integrations
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-blue-100">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  90-day context window
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-blue-100">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Real-time briefings
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-blue-100">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Full focus analytics
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-blue-100">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Priority support
+                </li>
+              </ul>
+            </div>
+            <a href="#get-started" class="mt-auto btn-accent block w-full text-center py-3 rounded-xl text-sm font-semibold text-white cursor-pointer min-h-[44px] flex items-center justify-center">
+              Start 14-day trial
+            </a>
+          </div>
+
+          <!-- Enterprise -->
+          <div class="bg-white rounded-2xl border border-border p-8 flex flex-col card-lift">
+            <div>
+              <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">Enterprise</p>
+              <p class="text-4xl font-800 text-foreground mb-1" style="font-weight:800">Custom</p>
+              <p class="text-sm text-slate-400 mb-6">Annual contract · dedicated support</p>
+              <ul class="space-y-3 mb-8" aria-label="Enterprise plan features">
+                <li class="flex items-center gap-2.5 text-sm text-slate-600">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Unlimited integrations
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-slate-600">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Unlimited context history
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-slate-600">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  SSO / SAML / SCIM
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-slate-600">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Custom LLM deployment
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-slate-600">
+                  <svg viewBox="0 0 16 16" fill="none" class="icon-md flex-shrink-0" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Dedicated success manager
+                </li>
+              </ul>
+            </div>
+            <a href="mailto:sales@nexus.ai" class="mt-auto block w-full text-center py-3 rounded-xl border border-primary text-sm font-semibold text-primary hover:bg-blue-50 transition-colors duration-150 cursor-pointer min-h-[44px] flex items-center justify-center">
+              Contact sales
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────────────
+         SECTION 7 — FINAL CTA
+         rule: primary-action, conversion-optimization
+    ─────────────────────────────────────────────────────────── -->
+    <section aria-labelledby="cta-heading" class="relative py-28 px-6 overflow-hidden bg-primary">
+      <!-- Decorative radial -->
+      <div aria-hidden="true" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="w-[600px] h-[400px] rounded-full bg-secondary opacity-20 blur-3xl"></div>
+      </div>
+
+      <div class="relative max-w-2xl mx-auto text-center">
+        <h2 id="cta-heading" class="text-3xl md:text-4xl font-800 text-white leading-tight mb-5" style="font-weight:800">
+          Your most productive quarter starts now.
+        </h2>
+        <p class="text-blue-200 text-lg leading-relaxed mb-10 max-w-lg mx-auto">
+          Join 12,400+ teams using Nexus to think faster, ship smarter, and stay in flow. Free to start. No credit card required.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href="#get-started"
+            class="btn-accent inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold text-white cursor-pointer min-h-[44px]"
+          >
+            Start for free — no card needed
+            <svg viewBox="0 0 16 16" fill="none" class="icon-sm" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a
+            href="#pricing"
+            class="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-medium text-blue-200 hover:text-white border border-blue-400 border-opacity-40 hover:border-opacity-80 transition-colors duration-150 cursor-pointer min-h-[44px]"
+          >
+            View pricing
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─────────────────────────────────────────────────────────
+       FOOTER — rule: navigation-consistency, destructive-nav-separation
+  ──────────────────────────────────────────────────────────── -->
+  <footer role="contentinfo" class="bg-foreground text-slate-400 py-16 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-10 mb-12">
+
+        <!-- Brand column -->
+        <div class="col-span-2 md:col-span-2">
+          <a href="/" aria-label="Nexus home" class="flex items-center gap-2.5 mb-4 group">
+            <svg viewBox="0 0 32 32" fill="none" class="icon-lg flex-shrink-0" aria-hidden="true">
+              <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" fill="#1E3A5F"/>
+              <path d="M16 8L22 11.5V18.5L16 22L10 18.5V11.5L16 8Z" fill="#2563EB"/>
+              <circle cx="16" cy="15" r="2.5" fill="white"/>
+            </svg>
+            <span class="text-white font-bold text-[17px]">Nexus</span>
+          </a>
+          <p class="text-sm leading-relaxed max-w-xs">
+            AI-powered productivity that connects your work, thought, and execution in one intelligent workspace.
+          </p>
+        </div>
+
+        <!-- Product links -->
+        <div>
+          <h3 class="text-sm font-semibold text-white mb-4">Product</h3>
+          <ul class="space-y-3 text-sm" role="list">
+            <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+            <li><a href="#pricing" class="hover:text-white transition-colors">Pricing</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Changelog</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Roadmap</a></li>
+          </ul>
+        </div>
+
+        <!-- Company links -->
+        <div>
+          <h3 class="text-sm font-semibold text-white mb-4">Company</h3>
+          <ul class="space-y-3 text-sm" role="list">
+            <li><a href="#" class="hover:text-white transition-colors">About</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+            <li><a href="mailto:hello@nexus.ai" class="hover:text-white transition-colors">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal links -->
+        <div>
+          <h3 class="text-sm font-semibold text-white mb-4">Legal</h3>
+          <ul class="space-y-3 text-sm" role="list">
+            <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Terms</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Security</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Cookies</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="border-t border-slate-700 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+        <p>&copy; 2026 Nexus, Inc. All rights reserved.</p>
+        <p class="text-slate-500">Designed with intent. Built to ship.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
