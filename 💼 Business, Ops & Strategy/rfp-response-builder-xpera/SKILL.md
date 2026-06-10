@@ -70,7 +70,7 @@ For each field:
 1. Pull the most relevant passage(s) from the library
 2. Write a response scoped to the field's character limit
 3. Use professional, third-person declarative tone ("The platform encrypts data at rest using AES-256…")
-4. Never hedge with "we believe" or "typically" — if the doc says it, state it; if it doesn't, flag it
+4. Never state a fact not explicitly written in the library — not from memory, not inferred from industry norms, not extrapolated from adjacent facts. If the doc says it, state it; if it doesn't, flag it as a gap. "We follow least-privilege principles" is a gap if the doc doesn't say it.
 
 **Tone rules:**
 - Security/compliance: precise, cite standards by name (SOC 2 Type II, ISO 27001)
@@ -109,6 +109,7 @@ After the table, append the gaps list and ask the user to supply missing informa
 | Mistake | Fix |
 |---------|-----|
 | Drafting from memory, not the library | Read the library first. Every claim needs a source. |
+| Inferring unstated capabilities ("we follow least-privilege principles" when the doc doesn't say it) | Flag as gap — industry-standard ≠ documented |
 | Ignoring character limits | Capture limits in Step 2; trim to fit before outputting |
 | Answering yes/no fields with prose | Match the field type exactly |
 | Combining all sections into one wall of text | One table per section; reviewable row by row |
